@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 1. Load Scittle -->
+      <title>Scittle Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- Automatic Light/Dark Mode -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap">
+<!-- Dark Mode Only -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/scittle@latest/dist/scittle.min.js" type="application/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scittle@latest/dist/scittle.promesa.min.js" type="application/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scittle@latest/dist/scittle.pprint.min.js" type="application/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scittle@latest/dist/scittle.reagent.min.js" type="application/javascript"></script>
+    <!-- 2. Disable automatic evaluation of scittle scripts -->
+     <script>scittle.core.disable_auto_eval()</script>
+    <!-- 3. Import JSJoda as a module and expose it globally -->
+    <script type="module">
+        // Import from a CDN like esm.sh or jsdelivr
+        import * as JSJoda from "https://esm.sh/@js-joda/core@5.6.1";
+        //import { useTimezone } from "https://esm.sh/@js-joda/timezone@2.25.1";
+        //const JSJodaWithTimezone = useTimezone(JSJoda);
+        // Attach to globalThis so Scittle can find it
+        globalThis.JSJoda = JSJoda;
+        //globalThis.JSJoda = JSJodaWithTimezone;
+        // Manually trigger Scittle evaluation now that dependencies are ready
+        scittle.core.eval_script_tags();
+    </script>
+    <!-- 4. Your Scittle Code -->
+    <script type="application/x-scittle">
+
+      (require 
+         '[reagent.core :as r]
+         '[reagent.dom :as rdom]
+       '[goog.string :as gstring]
+      '[goog.string.format])
+
+
+;; atoms and constants
+(def state (r/atom 0))
+(def state2 (r/atom 0))
+(def diff (r/atom "" ))
+
+      (defn get-mass-diff []
+       (let [m1  @state
+             m2  @state2
+             diff- (- m2 m1)
+             diff-abs (abs diff-)
+             diff-str (gstring/format "%.2f" diff-abs )]
+        (if (pos? diff-)      
+         (str m2 " - " m1 " = "  diff-str)
+         (str m1 " - " m2 " = "  diff-str))))
+        
+
+;; the html main components
+(defn my-component []
+  [:div
+   [:br]
+   
+   [:label {:style {:margin-left "10px"}}
+    "m₁:" ; Note the trailing space
+    [:input {:type        "number"
+             :style       {:display "inline-block" :width "150px" :margin-left "10px"}
+             :placeholder "tarr"
+             :value       (str @state)
+             :on-change   (fn [event]
+                             (reset! state (-> event .-target .-value)))}]]
+
+   [:label {:style {:margin-left "16px"}}
+    "m₂:" ; Note the trailing space
+    [:input {:type        "number"
+             :style       {:display "inline-block" :width "150px"     :margin-left "10px"}
+             :placeholder "time"
+             :value       (str @state2)
+             :on-change   (fn [event]
+                            (reset! state2 (-> event .-target .-value)))}]]
+
+   [:p {:style {:margin-top "16px" :margin-left "6px"}}
+        [:button {:on-click #(reset! diff (get-mass-diff)
+                              (.writeText js/navigator.clipboard (get-mass-diff)))}
+        "calculate Δm"]
+    " " ; space between button and text
+    @diff]
+      ])
+
+
+(rdom/render [my-component] (.getElementById js/document "app"))
+
+
+</script>
+</head>
+<body>
+
+
+
+
+<h1 style="
+  text-align: center;
+  font-family: 'UnifrakturCook';
+  font-weight: 700;
+  text-transform: lowercase;
+  letter-spacing: 2px;
+  font-size: 5rem;
+  margin-top: 0;
+">
+  caclulator
+</h1>
+
+    <div id="app"><div class="loader"></div>
+</body>
+</html>   
+
+
