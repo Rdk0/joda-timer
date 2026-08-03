@@ -132,7 +132,7 @@
 (defonce mass1 (r/atom 0))
 (defonce mass2 (r/atom 0))
 (defonce mass-diff (r/atom "" ))
-
+(defonce app-state (r/atom {:nmr-summary ""}))
 
 ;; Helper to safely parse strings or return the object if already an Instant
 (defn ->instant [v]
@@ -274,16 +274,25 @@
   (str/replace formula #"([A-Za-z\)\u2080-\u2089]+)(\d+)"
                (fn [[_ prefix digits]]
                  (str prefix (str/join (map #(get digit->subscript % %) digits))))))
-      
+
+
+(def ^:private subscript-map
+  {\₀ "0" \₁ "1" \₂ "2" \₃ "3" \₄ "4"
+   \₅ "5" \₆ "6" \₇ "7" \₈ "8" \₉ "9"})
+
+(defn- normalize-subscripts
+  "Converts subscript characters in a string to standard ASCII digits."
+  [s]
+  (apply str (map #(get subscript-map % %) s)))
+
 (defn parse-formula [formula]
-      ;;input "C6H6O6"
-      ;;output (["C" 6] ["H" 6] ["O" 6])
-      (let [formula-regex #"([A-Z][a-z]*)(\d*)"]
-  (for [[_ element count-str] (re-seq formula-regex formula)
-        :when (not (empty? element))]
-    [element (if (empty? count-str)
-               1
-               (js/parseInt count-str 10))])))
+  ;; Accepts both "C6H6O6" and "C₆H₆O₆" -> (["C" 6] ["H" 6] ["O" 6])
+  (let [formula-regex #"([A-Z][a-z]*)([0-9₀-₉]*)"]
+    (for [[_ element count-str] (re-seq formula-regex formula)]
+      [element (if (seq count-str)
+                 (js/parseInt (normalize-subscripts count-str) 10)
+                 1)])))
+
 
 (defn calculate-molecular-mass [formula]
       ;;input "C6H6O6"
@@ -300,7 +309,8 @@
              output-str   (str "LC-MS calcd. for [" (format-formula formula) " + H]⁺ " (+ MM 1.0) "; found \nMS (ESI) m/z  [M+H]⁺")]
       (.writeText js/navigator.clipboard output-str)
        output-str))
-      (js/console.log (str "parsed-formula for C6H6O6 is " (parse-formula "C6H6O6" )))   
+      
+      ;;(js/console.log (str "parsed-formula for C6H6O6 is " (parse-formula "C6H6O6" )))   
 ;;################################3
 ;;NMR
 
@@ -345,16 +355,43 @@
        (reduce + (map (fn [el] (nth el 2)) aromatic-protons))
       ))
 
-(defn process-nmr [nmr]
- (let [parsed-nmr (extract-nmr-signals nmr)
-       num-all-protons (count-all-protons parsed-nmr)
-       num-arom-protons (count-aromatic-protons parsed-nmr)
-       large-Js (check-J-values parsed-nmr)]
- (str "* observed: " num-all-protons " H, required:\n"
-"* large Js: " large-Js "\n"
-  "* sum of aromatic signals = " num-arom-protons " \n ")))
+(defn copy-to-clipboard! [text]
+  (-> (.writeText js/navigator.clipboard text)
+      (.then #(js/console.log "Copied to clipboard!"))
+      (.catch #(js/console.warn "Clipboard copy blocked or failed:" %))))
 
-                                                                     
+
+
+(defonce app-state (r/atom {:nmr-summary ""}))
+
+(defn process-nmr [nmr]
+  (let [parsed-nmr       (extract-nmr-signals nmr)
+        num-all-protons  (count-all-protons parsed-nmr)
+        num-arom-protons (count-aromatic-protons parsed-nmr)
+        large-Js         (check-J-values parsed-nmr)]
+    (str "* observed: " num-all-protons " H, required:\n"
+         "* large Js: " large-Js "\n"
+         "* sum of aromatic signals = " num-arom-protons "\n")))
+
+(defn read-process-and-copy! []
+  (let [;; 1. Build a promise chain that reads the clipboard,
+        ;;    processes it, updates app-state, and returns the output string.
+        processed-promise (-> (.readText js/navigator.clipboard)
+                              (.then (fn [raw-text]
+                                       (let [summary (process-nmr raw-text)]
+                                         (swap! app-state assoc :nmr-summary summary)
+                                         summary))))
+        ;; 2. Wrap the promise in a ClipboardItem.
+        ;;    This MUST happen synchronously inside the users click event.
+        item (js/ClipboardItem.
+              #js {"text/plain" processed-promise})]
+    ;; 3. Write the item directly inside the click event frame
+    (-> (.write js/navigator.clipboard #js [item])
+        (.then #(js/console.log "Summary written to clipboard successfully!"))
+        (.catch #(js/console.warn "Failed to write to clipboard:" %)))))
+
+
+
 ;; Example output:
 (js/console.log (str "parsed NMR is " (extract-nmr-signals nmr-str)))
 (js/console.log (str "counted is " (count-all-protons (extract-nmr-signals nmr-str)))) ;; => [[7.6 12.1 1.0] [7.23 9.0 0.5] [1.23 nil 9.0]]
@@ -466,28 +503,19 @@
       (.then (.readText js/navigator.clipboard)
              (fn [text]
                ;; Successfully read string from clipboard
-               (js/console.log "Pasted string:" text)
-               (js/console.log (lcms-string text))
+               (js/console.log "Pasted LCMS string:" text)
+               (lcms-string text))
             )
               (fn [err]
                ;; Handle permission denied / browser errors
-      (js/console.warn "Clipboard access denied:" err))))
+      (js/console.warn "Clipboard access denied:" err)))
       }
-   "LCMS"]
+      "Process & Copy LCMS"]
+        ;; Hiccup Button
 [:button.grid-btn
-          {:on-click
-          (fn [_]
-      (.then (.readText js/navigator.clipboard)
-             (fn [text]
-               ;; Successfully read string from clipboard
-               (js/console.log "Pasted string:" text)
-               (js/console.log (str (extract-nmr-signals text)))
-            )
-              (fn [err]
-               ;; Handle permission denied / browser errors
-      (js/console.warn "Clipboard access denied:" err))))}
-          "NMR"]])
-
+ {:on-click (fn [_] (read-process-and-copy!))}
+ "Process & Copy NMR"]])
+                                                                     
       ;; 4. Main Component (Composes both together)
     (defn main-app []
       [:div
@@ -510,7 +538,7 @@
   font-size: 5rem;
   margin-top: 0;
 ">
-  JSJoda timer, calc and pdf merger
+time, mass, pdf, lcms and nmr processor
 
 </h1>
 <div id="app"><div class="loader"></div>
