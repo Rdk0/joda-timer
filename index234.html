@@ -103,7 +103,8 @@
          '[reagent.core :as r]
          '[reagent.dom :as rdom]
          '[goog.string :as gstring]
-         '[goog.string.format])
+       '[goog.string.format])
+(require '[clojure.string :as str])
 
 
 (defn current-eastern-zone []
@@ -122,7 +123,7 @@
 ;; atoms and constants
 (defonce zone-offset (if (= "EDT" current-eastern-zone ) -5 -4))
 ;;file name for the mergeed pdf
-(defonce pdf-file-out "OICR-RSL-20.pdf")
+(defonce pdf-file-out "OL-20.pdf")
 (defonce est-offset (js/JSJoda.ZoneOffset.ofHours zone-offset)) ; EDT is UTC-4 between mid-March to early November otherwise it is UTC-5
 (defonce state (r/atom "2026-07-25 06:20:34"))
 (defonce now-time (r/atom nil))
@@ -243,19 +244,122 @@
 
 ;;##########################
  (def button-text {
-    :workup "The reaction was partitioned between H₂O and EtOAc CH₂Cl₂.  The aq phase was extracted with EtOAc CH₂Cl₂ (2x).  The combined organic layers were dried (Na₂SO4) and concentrated under reduced pressure.."
+    :workup "The reaction was partitioned between H₂O and EtOAc CH₂Cl₂.  The aq phase was extracted with EtOAc CH₂Cl₂ (2x). The combined organic layers were dried (Na₂SO₄ MgSO₄) and concentrated under reduced pressure.. "
     :afford "to afford  as a  solid ( mg, % yield based on purity of  %)"
-    :FC "The reaction mixture was concentrated under reduced pressure, deposited on Celite and purified by flash chromatography (25 g SiO₂  Innoflash® cartridge, using MeOH in CH₂Cl₂ eluting at x % MeOH, pooled fractions:"
-    :HPLC "Repurified by preparative HPLC (30 g Biotage® SNAP KP-C₁₈-HS, MeOH in (H₂O + 0.05 % TFA)) eluting at  % MeOH, pooled fractions:"
-    :NMR "NMR"
-    :LCMS "LCMS"})
+    :FC "The reaction mixture was concentrated under reduced pressure, deposited on Celite and purified by flash chromatography ( g SiO₂ ® Cartridge, using EtOAc in hexanes or MeOH in CH₂Cl₂ or CH₂Cl₂/MeOH/conc aq NH₄OH 89/10/1 in CH₂Cl₂ eluting at x % of the more polar phase, pooled fractions:"
+    :HPLC "Repurified by preparative HPLC ( g ®Rբ C₁₈, MeCN in H₂O + 0.1 % HCO₂H eluting at % MeCN, pooled fractions:\n Concentrated under reduced pressure, dissolved in DMSO, filtered and purified by preparative LCMS Waters 1 XSelect CSH C₁₈ 5 μm OBD 19x100 mm column,\n using MeCN and H₂O + 10 mM NH₄HCO₃ eluting , method TK_Bcl6_A2B2_XXYY MeCN and H₂O + 0.1 % HCO₂H, method TK_Bcl6_A1B1_XXYY.\n 15 min run, Rt(max) Y.YY min, max injection volume YYY µL\n The fractions were distributed into several vials and freeze-dried to afford x as a x solid ( , % yield based on purity of  %)\n vial 1: x mg vial 2: x mg vial 3: x mg"
+     :NMR "observed: 0 H, required:
+* all coupling constants are smaller than 9.0 Hz
+* sum of aromatic signals = 0
+* aromatic signals are []
+* sum of aliphatic signals = 0"
+    :degass "The reaction mixture was sealed, suspended in H₂O ( mL) and degassed with N₂, before DME ( mL) was added and degassing was repeated.  The sealed vial was then heated sealed in a microwave reactor at YY ºC for ."
+     :PoraPak "filtered through a Waters PoraPak CX or 3-propylsulfonic acid-functionalized silica gel column, rinsing with MeOH and eluting with 2 M  NH₃ in MeOH."
+    :LCMS "LC-MS calcd. for [ + H]⁺ 1.0; found MS (ESI) m/z  [M+H]⁺"})
 
 (defn handle-click [button-id]
       ;; Calling native JS alert via interop
       (.writeText js/navigator.clipboard (button-id button-text)))
+;;###########################
+;;LCMS
+
+(def atomic-masses {"H" 1.008 "C" 12.011 "N" 14.007 "O" 15.999 "Na" 22.990 "Cl" 35.453 "Br" 78.918338 "I" 126.90447 "F" 18.998403 "S" 32.065 "B" 10.811 "Si" 28.0855 "D" 2.0141017778 "P" 30.973761998 })
+
+(def digit->subscript
+  {\0 "₀" \1 "₁" \2 "₂" \3 "₃" \4 "₄"
+   \5 "₅" \6 "₆" \7 "₇" \8 "₈" \9 "₉"})
+
+(defn format-formula [formula]
+  ;; Match any element symbol (including already subscripted ones) followed by standard digits
+  (str/replace formula #"([A-Za-z\)\u2080-\u2089]+)(\d+)"
+               (fn [[_ prefix digits]]
+                 (str prefix (str/join (map #(get digit->subscript % %) digits))))))
+      
+(defn parse-formula [formula]
+      ;;input "C6H6O6"
+      ;;output (["C" 6] ["H" 6] ["O" 6])
+      (let [formula-regex #"([A-Z][a-z]*)(\d*)"]
+  (for [[_ element count-str] (re-seq formula-regex formula)
+        :when (not (empty? element))]
+    [element (if (empty? count-str)
+               1
+               (js/parseInt count-str 10))])))
+
+(defn calculate-molecular-mass [formula]
+      ;;input "C6H6O6"
+ ;; parsed formula (["C" 6] ["H" 6] ["O" 6])
+ ;;output 174.108
+  (let [parsed-formula (parse-formula formula)]
+  (reduce + (map (fn [el]
+           (let [element-id (nth el 0)
+                 element-count (nth el 1)]
+             (+ (* (get  atomic-masses element-id ) element-count))))  parsed-formula))))
+
+(defn lcms-string [formula]
+      (let [ MM (calculate-molecular-mass formula)
+             output-str   (str "LC-MS calcd. for [" (format-formula formula) " + H]⁺ " (+ MM 1.0) "; found \nMS (ESI) m/z  [M+H]⁺")]
+      (.writeText js/navigator.clipboard output-str)
+       output-str))
+      (js/console.log (str "parsed-formula for C6H6O6 is " (parse-formula "C6H6O6" )))   
+;;################################3
+;;NMR
+
+(def nmr-str "1H NMR (500 MHz, CDCl3) 7.60 (d, J = 12.1 Hz, 1H), 7.23 (t, J = 9.0 Hz, 0.5H), 1.23 (s, 9H) ")
+
+;; Regex breakdown:
+;; 1. (\d+\.\d+)\s*         -> Chemical shift (e.g. 7.60)
+;; 2. \([a-z]+,\s*          -> Peak multiplicity prefix e.g. (d, or (t,
+;; 3. (?:J\s*=\s*(\d+\.\d+)\s*Hz,\s*)? -> Optional J-coupling value (e.g. 12.1)
+;; 4. (\d+(?:\.\d+)?)H\)    -> Proton integration count (e.g. 1H or 0.5H)
+
+(def nmr-regex #"(\d+\.\d+)\s*\([a-z]+,\s*(?:J\s*=\s*(\d+\.\d+)\s*Hz,\s*)?(\d+(?:\.\d+)?)H\)")
+
+(defn parse-float [s]
+  (when s
+    (parse-double s))) ;; In Clojure JVM use (Double/parseDouble s) orjs/parseFloat in JS
+
+(defn extract-nmr-signals [text]
+  (mapv (fn [[_ shift j-val protons]]
+          [(parse-float shift)
+           (parse-float j-val)
+           (parse-float protons)])
+        (re-seq nmr-regex text)))
+
+
+(defn check-J-values [parsed-nmr]
+ (let [cut-off 9.0
+       js (map (fn [el] (nth el 1)) parsed-nmr )]
+  (filter #(and (some? %) (> % cut-off)) js)))
 
 
 
+(defn count-all-protons [parsed-nmr]
+  (let [all-protons-integrals (map (fn [el] (or (get el 2) 0)) parsed-nmr)]
+      (reduce + all-protons-integrals)))
+
+
+(defn count-aromatic-protons [parsed-nmr]
+ ;;parsed-nmr  [[7.6 12.1 1.0] [7.23 9.0 0.5] [1.23 nil 9.0]]
+      (let[aromatic-cut-off 6.0
+       aromatic-protons (filter (fn [[k v z]] (and (some? v) (> v aromatic-cut-off))) parsed-nmr)]
+       (reduce + (map (fn [el] (nth el 2)) aromatic-protons))
+      ))
+
+(defn process-nmr [nmr]
+ (let [parsed-nmr (extract-nmr-signals nmr)
+       num-all-protons (count-all-protons parsed-nmr)
+       num-arom-protons (count-aromatic-protons parsed-nmr)
+       large-Js (check-J-values parsed-nmr)]
+ (str "* observed: " num-all-protons " H, required:\n"
+"* large Js: " large-Js "\n"
+  "* sum of aromatic signals = " num-arom-protons " \n ")))
+
+                                                                     
+;; Example output:
+(js/console.log (str "parsed NMR is " (extract-nmr-signals nmr-str)))
+(js/console.log (str "counted is " (count-all-protons (extract-nmr-signals nmr-str)))) ;; => [[7.6 12.1 1.0] [7.23 9.0 0.5] [1.23 nil 9.0]]
+(js/console.log (str "check J values " (check-J-values  (extract-nmr-signals nmr-str))))                                                                     
+(js/console.log (str "process-nmr " (process-nmr nmr-str)))  
 
  (def container (.getElementById js/document "app"))
 
@@ -337,6 +441,7 @@
 
 )
 
+
 ;; 3. The Button Grid Component
     (defn button-grid []
       [:div.button-grid
@@ -352,11 +457,35 @@
       [:button.grid-btn
           {:on-click #(handle-click :HPLC)}
       "HPLC"]
-      [:button.grid-btn
-          {:on-click #(handle-click :LCMS)}
-     "LCMS"] 
-      [:button.grid-btn
-          {:on-click #(handle-click :NMR)}
+    ;  [:button.grid-btn
+     ; {:on-click #(handle-click :LCMS)}
+     ; "LCMS"]
+     [:button.grid-btn
+      {:on-click
+    (fn [_]
+      (.then (.readText js/navigator.clipboard)
+             (fn [text]
+               ;; Successfully read string from clipboard
+               (js/console.log "Pasted string:" text)
+               (js/console.log (lcms-string text))
+            )
+              (fn [err]
+               ;; Handle permission denied / browser errors
+      (js/console.warn "Clipboard access denied:" err))))
+      }
+   "LCMS"]
+[:button.grid-btn
+          {:on-click
+          (fn [_]
+      (.then (.readText js/navigator.clipboard)
+             (fn [text]
+               ;; Successfully read string from clipboard
+               (js/console.log "Pasted string:" text)
+               (js/console.log (str (extract-nmr-signals text)))
+            )
+              (fn [err]
+               ;; Handle permission denied / browser errors
+      (js/console.warn "Clipboard access denied:" err))))}
           "NMR"]])
 
       ;; 4. Main Component (Composes both together)
