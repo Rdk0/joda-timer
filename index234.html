@@ -1,9 +1,9 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <!-- 1. Load Scittle -->
-      <title>joda</title>
+    <title>joda</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
@@ -11,10 +11,10 @@
     <!-- Automatic Light/Dark Mode -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap">
-<!-- Dark Mode Only -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap">
+    <!-- Dark Mode Only -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/scittle@latest/dist/scittle.min.js" type="application/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/scittle@latest/dist/scittle.promesa.min.js" type="application/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js"></script>
@@ -23,78 +23,78 @@
     <script src="https://cdn.jsdelivr.net/npm/scittle@latest/dist/scittle.reagent.min.js" type="application/javascript"></script>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <!-- 2. Disable automatic evaluation of scittle scripts -->
-     <script>scittle.core.disable_auto_eval()</script>
+    <script>scittle.core.disable_auto_eval()</script>
     <!-- 3. Import JSJoda as a module and expose it globally -->
     <script type="module">
-        // Import from a CDN like esm.sh or jsdelivr
-        import * as JSJoda from "https://esm.sh/@js-joda/core@5.6.1";
-        //import { useTimezone } from "https://esm.sh/@js-joda/timezone@2.25.1";
-        //const JSJodaWithTimezone = useTimezone(JSJoda);
-        // Attach to globalThis so Scittle can find it
-        globalThis.JSJoda = JSJoda;
-        //globalThis.JSJoda = JSJodaWithTimezone;
-        // Manually trigger Scittle evaluation now that dependencies are ready
-        scittle.core.eval_script_tags();
+      // Import from a CDN like esm.sh or jsdelivr
+      import * as JSJoda from "https://esm.sh/@js-joda/core@5.6.1";
+      //import { useTimezone } from "https://esm.sh/@js-joda/timezone@2.25.1";
+      //const JSJodaWithTimezone = useTimezone(JSJoda);
+      // Attach to globalThis so Scittle can find it
+      globalThis.JSJoda = JSJoda;
+      //globalThis.JSJoda = JSJodaWithTimezone;
+      // Manually trigger Scittle evaluation now that dependencies are ready
+      scittle.core.eval_script_tags();
     </script>
     <!-- 2. Grid & Button Styles -->
- <style>
-    /* Sakura Color Variables */
-    :root {
-      --sakura-bg-accent: #f1e3e1;
-      --sakura-border: #e2d1d0;
-      --sakura-pink-main: #e5a4a2;
-      --sakura-pink-hover: #d08380;
-      --sakura-text-dark: #222222;
-    }
-
-    /* Clean Card Container Matching Sakura Forms/Pre blocks */
-    .sakura-card {
-      background-color: #ffffff;
-      border: 1px solid var(--sakura-border);
-      border-radius: 4px;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-    }
-    
-
-    /* Button Grid Layout */
-    .button-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-
-    /* Custom Grid Button - styled explicitly to complement Sakura's default buttons */
-    .sakura-btn {
-      background-color: var(--sakura-pink-main);
-      color: var(--sakura-text-dark);
-      border: 1px solid var(--sakura-pink-hover);
-      border-radius: 4px;
-      padding: 0.6rem 1rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: background-color 0.2s ease, transform 0.1s ease;
-    }
-
-    .sakura-btn:hover {
-      background-color: var(--sakura-pink-hover);
-      color: #ffffff;
-    }
-
-    .sakura-btn:active {
-      transform: scale(0.98);
-    }
-
-    /* Small layout tweak for mobile screens */
-    @media (max-width: 480px) {
-      .button-grid {
-        grid-template-columns: repeat(2, 1fr);
+    <style>
+      /* Sakura Color Variables */
+      :root {
+          --sakura-bg-accent: #f1e3e1;
+          --sakura-border: #e2d1d0;
+          --sakura-pink-main: #e5a4a2;
+          --sakura-pink-hover: #d08380;
+          --sakura-text-dark: #222222;
       }
-    }
-  </style>
+
+      /* Clean Card Container Matching Sakura Forms/Pre blocks */
+      .sakura-card {
+          background-color: #ffffff;
+          border: 1px solid var(--sakura-border);
+          border-radius: 4px;
+          padding: 1.5rem;
+          margin-top: 1.5rem;
+      }
+      
+
+      /* Button Grid Layout */
+      .button-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.75rem;
+          margin-top: 1rem;
+      }
+
+      /* Custom Grid Button - styled explicitly to complement Sakura's default buttons */
+      .sakura-btn {
+          background-color: var(--sakura-pink-main);
+          color: var(--sakura-text-dark);
+          border: 1px solid var(--sakura-pink-hover);
+          border-radius: 4px;
+          padding: 0.6rem 1rem;
+          font-size: 0.95rem;
+          font-weight: 600;
+          cursor: pointer;
+          text-align: center;
+          transition: background-color 0.2s ease, transform 0.1s ease;
+      }
+
+      .sakura-btn:hover {
+          background-color: var(--sakura-pink-hover);
+          color: #ffffff;
+      }
+
+      .sakura-btn:active {
+          transform: scale(0.98);
+      }
+
+      /* Small layout tweak for mobile screens */
+      @media (max-width: 480px) {
+          .button-grid {
+              grid-template-columns: repeat(2, 1fr);
+          }
+      }
+    </style>
     <!-- 4. Your Scittle Code -->
     <script type="application/x-scittle">
 
@@ -103,70 +103,70 @@
          '[reagent.core :as r]
          '[reagent.dom :as rdom]
          '[goog.string :as gstring]
-       '[goog.string.format])
-(require '[clojure.string :as str])
+         '[goog.string.format]
+         '[clojure.string :as str])
 
 
-(defn current-eastern-zone []
-"find if EST or EDT is applicable at this time"
- ;Usage:
- ;=> "EDT" (between March and November)
- ;=> "EST" (between November and March)
-  (let [now (js/Date.)
-        formatter (js/Intl.DateTimeFormat. "en-US" 
-                    #js {:timeZone "America/New_York" 
-                         :timeZoneName "short"})
-        parts (js->clj (.formatToParts formatter now) :keywordize-keys true)]
-    (:value (first (filter #(= (:type %) "timeZoneName") parts)))))
+      (defn current-eastern-zone []
+       "find if EST or EDT is applicable at this time"
+       ;Usage:
+       ;=> "EDT" (between March and November)
+       ;=> "EST" (between November and March)
+       (let [now (js/Date.)
+             formatter (js/Intl.DateTimeFormat. "en-US" 
+                        #js {:timeZone "America/New_York" 
+                             :timeZoneName "short"})
+             parts (js->clj (.formatToParts formatter now) :keywordize-keys true)]
+        (:value (first (filter #(= (:type %) "timeZoneName") parts)))))
 
 
-;; atoms and constants
-(defonce zone-offset (if (= "EDT" current-eastern-zone ) -5 -4))
-;;file name for the mergeed pdf
-(defonce pdf-file-out "OL-20.pdf")
-(defonce est-offset (js/JSJoda.ZoneOffset.ofHours zone-offset)) ; EDT is UTC-4 between mid-March to early November otherwise it is UTC-5
-(defonce state (r/atom "2026-07-25 06:20:34"))
-(defonce now-time (r/atom nil))
-(defonce state2 (r/atom "2026-07-25 06:20:34"))
-(defonce diff (r/atom "0"))
-(defonce mass1 (r/atom 0))
-(defonce mass2 (r/atom 0))
-(defonce mass-diff (r/atom "" ))
-(defonce app-state (r/atom {:nmr-summary ""}))
+      ;; atoms and constants
+      (defonce zone-offset (if (= "EDT" current-eastern-zone ) -5 -4))
+      ;;file name for the mergeed pdf
+      (defonce pdf-file-out "OIC-RSL-20.pdf")
+      (defonce est-offset (js/JSJoda.ZoneOffset.ofHours zone-offset)) ; EDT is UTC-4 between mid-March to early November otherwise it is UTC-5
+      (defonce state (r/atom "2026-07-25 06:20:34"))
+      (defonce now-time (r/atom nil))
+      (defonce state2 (r/atom "2026-07-25 06:20:34"))
+      (defonce diff (r/atom "0"))
+      (defonce mass1 (r/atom 0))
+      (defonce mass2 (r/atom 0))
+      (defonce mass-diff (r/atom "" ))
+      (defonce app-state (r/atom {:nmr-summary ""}))
 
-;; Helper to safely parse strings or return the object if already an Instant
-(defn ->instant [v]
-  (cond
-    (string? v) (try
-                  (js/JSJoda.Instant.parse v)
-                  (catch :default _ nil))
-    (instance? js/JSJoda.Instant v) v
-    :else nil))
+      ;; Helper to safely parse strings or return the object if already an Instant
+      (defn ->instant [v]
+       (cond
+        (string? v) (try
+                     (js/JSJoda.Instant.parse v)
+                     (catch :default _ nil))
+        (instance? js/JSJoda.Instant v) v
+        :else nil))
 
 
-(defn format-iso-string [inst]
-  (when inst
-    (let [s (if (string? inst) inst (.toString inst))]
-      (-> s
+      (defn format-iso-string [inst]
+       (when inst
+        (let [s (if (string? inst) inst (.toString inst))]
+         (-> s
           (clojure.string/replace "T" " ")
           ;; Take up to 19 characters safely
           (as-> formatted-str
-            (if (> (count formatted-str) 19)
-              (subs formatted-str 0 19)
-              formatted-str))))))
+           (if (> (count formatted-str) 19)
+            (subs formatted-str 0 19)
+            formatted-str))))))
 
 
-  (defn format-string-iso-joda [s]
-  (when (seq s)
-    (let [iso-like (clojure.string/replace s " " "T")
-          ldt      (js/JSJoda.LocalDateTime.parse iso-like)
-          instant  (.toInstant ldt js/JSJoda.ZoneOffset.UTC)]
-      (.toString instant))))
+      (defn format-string-iso-joda [s]
+       (when (seq s)
+        (let [iso-like (clojure.string/replace s " " "T")
+              ldt      (js/JSJoda.LocalDateTime.parse iso-like)
+              instant  (.toInstant ldt js/JSJoda.ZoneOffset.UTC)]
+         (.toString instant))))
 
 
-(defn format-duration [duration]
- ;;convert duration to a day hour string
-  (let [total-hours (/ (.toMillis duration) 3600000.0) ; Convert ms to total hours as a float
+      (defn format-duration [duration]
+       ;;convert duration to a day hour string
+       (let [total-hours (/ (.toMillis duration) 3600000.0) ; Convert ms to total hours as a float
         days        (quot (long total-hours) 24)       ; Integer division to get full days
         rem-hours   (- total-hours (* days 24))        ; Remaining hours
         formatted-h (.toFixed rem-hours 1)]            ; Format hours to 1 decimal place
@@ -175,70 +175,70 @@
       :else       (str formatted-h " h"))))
 
 
-(defn get-time-diff []
-;;calculate the time difference
-;;in: state ands state2 atoms,
-;;:out: string in format x day y h
-  (let [i1 (->instant (format-string-iso-joda @state))
-        i2 (->instant (format-string-iso-joda@state2))]
-    (if (and i1 i2)
-      (let [dur (js/JSJoda.Duration.between i1 i2)]
-        (format-duration dur))
-      "Invalid date string")))
+      (defn get-time-diff []
+        ;;calculate the time difference
+        ;;in: state ands state2 atoms,
+        ;;:out: string in format x day y h
+        (let [i1 (->instant (format-string-iso-joda @state))
+            i2 (->instant (format-string-iso-joda@state2))]
+            (if (and i1 i2)
+                (let [dur (js/JSJoda.Duration.between i1 i2)]
+                (format-duration dur))
+            "Invalid date string")))
 
-(defn get-mass-diff []
-    (let [m1  @mass1
-          m2  @mass2
-          diff- (- m2 m1)
-          diff-abs (abs diff-)
-          diff-str (gstring/format "%.2f" diff-abs )]
-    (if (pos? diff-)      
-         (str m2 " - " m1 " = "  diff-str)
-         (str m1 " - " m2 " = "  diff-str))))
+    (defn get-mass-diff []
+        (let [m1  @mass1
+            m2  @mass2
+            diff- (- m2 m1)
+            diff-abs (abs diff-)
+            diff-str (gstring/format "%.2f" diff-abs )]
+        (if (pos? diff-)      
+            (str m2 " - " m1 " = "  diff-str)
+            (str m1 " - " m2 " = "  diff-str))))
 
 
   ;;=======================================  
-(defn merge-and-download-pdfs [files]
-  (let [PDFDocument (.-PDFDocument js/PDFLib)]
-    ;; 1. Create a blank PDF Document
-    (-> (.create PDFDocument)
-        (.then
-         (fn [merged-doc]
-           ;; 2. Convert all File objects into ArrayBuffers
-           (let [buffer-promises (map #(.arrayBuffer %) files)]
-             (-> (.all js/Promise (to-array buffer-promises))
-                 (.then
-                  (fn [buffers]
-                    ;; 3. Load all PDFs from buffers
-                    (let [load-promises (map #(.load PDFDocument %) buffers)]
-                      (.all js/Promise (to-array load-promises)))))
-                 (.then
-                  (fn [pdf-docs]
-                    ;; 4. Sequentially copy all pages into merged-doc
-                    (let [copy-chain (reduce
-                                      (fn [chain pdf-doc]
-                                        (.then chain
-                                               (fn []
-                                                 (let [indices (.getPageIndices pdf-doc)]
-                                                   (-> (.copyPages merged-doc pdf-doc indices)
-                                                       (.then (fn [pages]
-                                                                (.forEach pages #(.addPage merged-doc %)))))))))
-                                      (.resolve js/Promise)
-                                      pdf-docs)]
-                      copy-chain)))
-                 (.then
-                  (fn []
-                    ;; 5. Save and trigger browser download
-                    (.save merged-doc)))
-                 (.then
-                  (fn [merged-bytes]
-                    (let [blob (js/Blob. #js [merged-bytes] #js {:type "application/pdf"})
-                          url (.createObjectURL js/URL blob)
-                          link (.createElement js/document "a")]
-                      (set! (.-href link) url)
-                      (set! (.-download link) pdf-file-out)
-                      (.click link)
-                      (.revokeObjectURL js/URL url))))))))
+    (defn merge-and-download-pdfs [files]
+        (let [PDFDocument (.-PDFDocument js/PDFLib)]
+        ;; 1. Create a blank PDF Document
+            (-> (.create PDFDocument)
+            (.then
+            (fn [merged-doc]
+            ;; 2. Convert all File objects into ArrayBuffers
+            (let [buffer-promises (map #(.arrayBuffer %) files)]
+                (-> (.all js/Promise (to-array buffer-promises))
+                (.then
+                (fn [buffers]
+                ;; 3. Load all PDFs from buffers
+                (let [load-promises (map #(.load PDFDocument %) buffers)]
+                    (.all js/Promise (to-array load-promises)))))
+                (.then
+                (fn [pdf-docs]
+                ;; 4. Sequentially copy all pages into merged-doc
+                (let [copy-chain (reduce
+                                 (fn [chain pdf-doc]
+                                  (.then chain
+                                   (fn []
+                                    (let [indices (.getPageIndices pdf-doc)]
+                                     (-> (.copyPages merged-doc pdf-doc indices)
+                                      (.then (fn [pages]
+                                              (.forEach pages #(.addPage merged-doc %)))))))))
+                                 (.resolve js/Promise)
+                                 pdf-docs)]
+                copy-chain)))
+             (.then
+              (fn []
+               ;; 5. Save and trigger browser download
+               (.save merged-doc)))
+             (.then
+              (fn [merged-bytes]
+               (let [blob (js/Blob. #js [merged-bytes] #js {:type "application/pdf"})
+                     url (.createObjectURL js/URL blob)
+                     link (.createElement js/document "a")]
+                (set! (.-href link) url)
+                (set! (.-download link) pdf-file-out)
+                (.click link)
+                (.revokeObjectURL js/URL url))))))))
         (.catch (fn [err]
       (js/console.error "Error merging pdfs:" err))))))
 
@@ -306,7 +306,7 @@
 
 (defn lcms-string [formula]
       (let [ MM (calculate-molecular-mass formula)
-             output-str   (str "LC-MS calcd. for [" (format-formula formula) " + H]⁺ " (+ MM 1.0) "; found \nMS (ESI) m/z  [M+H]⁺")]
+             output-str   (str "LC-MS calcd. for [" (format-formula formula) " + H]⁺ " (gstring/format "%.2f "(+ MM 1.0))  "; found \nMS (ESI) m/z  [M+H]⁺")]
       (.writeText js/navigator.clipboard output-str)
        output-str))
       
@@ -466,7 +466,7 @@
   @mass-diff]
 
  [:label
-  "Select pdf files to combine: "
+  "Select pdfs to combine: "
  [:input {:type "file"
            :accept ".pdf"
            :multiple true
@@ -514,14 +514,56 @@
         ;; Hiccup Button
 [:button.grid-btn
  {:on-click (fn [_] (read-process-and-copy!))}
- "Process & Copy NMR"]])
-                                                                     
+      "Process & Copy NMR"]])
+;;;;;;;;;;;;;;;;;;;;
+      ;; Timer
+      ;; Global shared state for the timer
+      (defonce timer-state (r/atom {:seconds 0 :running? false}))
+      ;; Reference to hold the JavaScript interval ID
+      (def interval-id (atom nil))
+
+      ;; Timer Control Functions
+      (defn start-timer []
+        (when-not (:running? @timer-state)
+          (swap! timer-state assoc :running? true)
+          (reset! interval-id
+                  (js/setInterval
+                   (fn []
+                     (swap! timer-state update :seconds inc))
+                   1000))))
+
+      (defn pause-timer []
+        (when (:running? @timer-state)
+          (swap! timer-state assoc :running? false)
+          (when @interval-id
+            (js/clearInterval @interval-id)
+            (reset! interval-id nil))))
+
+      (defn reset-timer []
+        (pause-timer)
+        (swap! timer-state assoc :seconds 0))
+
+      ;; 4. The Timer Component
+      (defn timer-component []
+        (let [{:keys [seconds running?]} @timer-state]
+          [:div.box
+           [:p [:strong "⏱️ lapsed: "] (gstring/format "%.2f" (/ seconds 60)) " min"]
+           [:div
+            [:button {:on-click start-timer
+                      :disabled running?} "Start"]
+            [:button {:on-click pause-timer
+                      :disabled (not running?)} "Pause"]
+            [:button {:on-click reset-timer} "Reset"]]]))
+
+
       ;; 4. Main Component (Composes both together)
     (defn main-app []
       [:div
        [my-component]
        [:br]
-       [button-grid]])
+      [button-grid]
+      [:br]
+      [timer-component]])
 
 (rdom/render [main-app] (.getElementById js/document "app"))
 
@@ -529,16 +571,16 @@
 </head>
 <body>
 
-<h1 style="
-  text-align: center;
-  font-family: 'UnifrakturCook';
-  font-weight: 700;
-  text-transform: lowercase;
-  letter-spacing: 2px;
-  font-size: 5rem;
-  margin-top: 0;
-">
-time, mass, pdf, lcms and nmr processor
+  <h1 style="
+             text-align: center;
+             font-family: 'UnifrakturCook';
+             font-weight: 700;
+             text-transform: lowercase;
+             letter-spacing: 2px;
+             font-size: 5rem;
+             margin-top: 0;
+             ">
+time, mass, pdf, lcms and nmr
 
 </h1>
 <div id="app"><div class="loader"></div>
