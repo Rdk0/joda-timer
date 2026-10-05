@@ -32,55 +32,8 @@
       // Evaluates ALL x-scittle tags in document order (joda app, then RDKit)
       scittle.core.eval_script_tags();
     </script>
-    <style>
-      /* Sakura Color Variables */
-      :root {
-          --sakura-bg-accent: #f1e3e1;
-          --sakura-border: #e2d1d0;
-          --sakura-pink-main: #e5a4a2;
-          --sakura-pink-hover: #d08380;
-          --sakura-text-dark: #222222;
-      }
-      .sakura-card {
-          background-color: #ffffff;
-          border: 1px solid var(--sakura-border);
-          border-radius: 4px;
-          padding: 1.5rem;
-          margin-top: 1.5rem;
-      }
-      .button-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 0.75rem;
-          margin-top: 1rem;
-      }
-      .sakura-btn {
-          background-color: var(--sakura-pink-main);
-          color: var(--sakura-text-dark);
-          border: 1px solid var(--sakura-pink-hover);
-          border-radius: 4px;
-          padding: 0.6rem 1rem;
-          font-size: 0.95rem;
-          font-weight: 600;
-          cursor: pointer;
-          text-align: center;
-          transition: background-color 0.2s ease, transform 0.1s ease;
-      }
-      .sakura-btn:hover { background-color: var(--sakura-pink-hover); color: #ffffff; }
-      .sakura-btn:active { transform: scale(0.98); }
-      @media (max-width: 480px) {
-          .button-grid { grid-template-columns: repeat(2, 1fr); }
-      }
-
-      /* RDKit section: styles scoped so they don't leak into the app above */
-      #rdkit-section { margin-top: 2rem; }
-      #rdkit-section .container { margin-bottom: 15px; }
-      #rdkit-section input[type="text"] { padding: 8px; width: 300px; max-width: 100%; font-size: 16px; display: inline-block; }
-      #rdkit-section button { padding: 8px 16px; font-size: 16px; cursor: pointer; }
-      #rdkit-section #error { color: red; margin-top: 10px; }
-      #rdkit-section #properties { margin-top: 15px; font-size: 14px; background: #f9f9f9; color: #222; padding: 10px; max-width: 450px; border-radius: 4px; word-break: break-all; }
-      #rdkit-section #properties ul { margin: 0; padding-left: 20px; }
-    </style>
+    <!-- Local stylesheet (keep styles.css in the same folder) -->
+    <link rel="stylesheet" href="styles.css">
 
     <!-- Scittle code: joda / time, mass, pdf, lcms, nmr app -->
     <script type="application/x-scittle">
@@ -668,15 +621,7 @@
 </head>
 <body>
 
-  <h1 style="
-             text-align: center;
-             font-family: 'UnifrakturCook';
-             font-weight: 700;
-             text-transform: lowercase;
-             letter-spacing: 2px;
-             font-size: 5rem;
-             margin-top: 0;
-             ">
+  <h1 class="page-title">
 time, mass, pdf, lcms and nmr
 
 </h1>
